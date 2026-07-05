@@ -2,8 +2,8 @@ name: Weather Agent
 
 on:
   schedule:
-    # GitHub cron is UTC. 00:00 UTC is 07:00 in Asia/Ho_Chi_Minh.
-    - cron: "0 0 * * *"
+    # TEST MODE - every 5 minutes
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
