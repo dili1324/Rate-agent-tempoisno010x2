@@ -89,7 +89,7 @@ class TempoRequestClient:
             logger.error("Tempo Wallet readiness check failed duration_ms=%.2f", elapsed_ms)
             raise TempoRequestError(
                 "Tempo Wallet is not ready. Run `tempo wallet login` and ensure the "
-                "runner has a valid access key before scheduled execution."
+                "runner has a valid access key before automated execution."
             )
         if not _is_wallet_ready(result.stdout):
             logger.error("Tempo wallet readiness output did not contain ready=true")

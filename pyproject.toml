@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel>=0.45"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "weather-agent-tempoisno010x2"
+name = "rate-agent-tempoisno010x2"
 version = "0.1.0"
-description = "MVP Weather Agent using Tempo MPP and Telegram"
+description = "MVP Rate Agent using Tempo MPP Alpha Vantage rates and Telegram"
 requires-python = ">=3.9"
 dependencies = []
 

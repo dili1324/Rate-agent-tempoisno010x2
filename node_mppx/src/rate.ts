@@ -1,53 +1,16 @@
 import { Mppx, tempo } from 'mppx/client'
 import {
-  DEFAULT_CITY_QUERY,
-  DEFAULT_LANG,
-  DEFAULT_UNITS,
+  DEFAULT_BASE_CURRENCY,
+  DEFAULT_METAL_SYMBOL,
+  DEFAULT_QUOTE_CURRENCY,
   endpoint,
 } from './config.js'
 import { log, printJson } from './log.js'
 import { createProvider } from './wallet.js'
 
-type GeocodeResult = {
-  name?: string
-  lat: number
-  lon: number
-  country?: string
-  state?: string
-}
-
-type WeatherResponse = {
-  geocode: unknown
-  currentWeather: unknown
-}
-
-function unwrapData(value: unknown): unknown {
-  if (value && typeof value === 'object' && 'data' in value) {
-    return (value as { data: unknown }).data
-  }
-  return value
-}
-
-function firstGeocodeResult(value: unknown): GeocodeResult {
-  const data = unwrapData(value)
-  const item = Array.isArray(data) ? data[0] : data
-
-  if (!item || typeof item !== 'object') {
-    throw new Error('No geocode result returned')
-  }
-
-  const maybeResult = item as Partial<GeocodeResult>
-  if (typeof maybeResult.lat !== 'number' || typeof maybeResult.lon !== 'number') {
-    throw new Error('Geocode result does not include numeric lat/lon')
-  }
-
-  return {
-    name: maybeResult.name,
-    lat: maybeResult.lat,
-    lon: maybeResult.lon,
-    country: maybeResult.country,
-    state: maybeResult.state,
-  }
+type RateResponse = {
+  gold: unknown
+  currency: unknown
 }
 
 async function postJson(mppx: ReturnType<typeof Mppx.create>, path: string, payload: unknown): Promise<unknown> {
@@ -120,33 +83,28 @@ async function createMppxClient(): Promise<ReturnType<typeof Mppx.create>> {
   return mppx
 }
 
-async function geocode(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
-  return postJson(mppx, '/geocode', {
-    q: DEFAULT_CITY_QUERY,
-    limit: 1,
+async function goldPrice(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
+  return postJson(mppx, '/alphavantage/commodity-price', {
+    commodity: 'GOLD_SILVER_SPOT',
+    symbol: DEFAULT_METAL_SYMBOL,
+    datatype: 'json',
   })
 }
 
-async function currentWeather(
-  mppx: ReturnType<typeof Mppx.create>,
-  geocodeBody: unknown,
-): Promise<unknown> {
-  const location = firstGeocodeResult(geocodeBody)
-  return postJson(mppx, '/current-weather', {
-    lat: location.lat,
-    lon: location.lon,
-    units: DEFAULT_UNITS,
-    lang: DEFAULT_LANG,
+async function currencyRate(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
+  return postJson(mppx, '/alphavantage/currency-exchange-rate', {
+    from_currency: DEFAULT_BASE_CURRENCY,
+    to_currency: DEFAULT_QUOTE_CURRENCY,
   })
 }
 
-async function weatherOnce(mppx?: ReturnType<typeof Mppx.create>): Promise<WeatherResponse> {
+async function rateOnce(mppx?: ReturnType<typeof Mppx.create>): Promise<RateResponse> {
   mppx = mppx ?? (await createMppxClient())
-  const geocodeBody = await geocode(mppx)
-  const currentWeatherBody = await currentWeather(mppx, geocodeBody)
+  const goldBody = await goldPrice(mppx)
+  const currencyBody = await currencyRate(mppx)
   return {
-    geocode: geocodeBody,
-    currentWeather: currentWeatherBody,
+    gold: goldBody,
+    currency: currencyBody,
   }
 }
 
@@ -154,30 +112,29 @@ async function main(): Promise<void> {
   const command = process.argv[2] ?? 'once'
   const mppx = command === 'once' || command === 'twice' ? undefined : await createMppxClient()
 
-  if (command === 'geocode') {
-    printJson({ ok: true, geocode: await geocode(mppx!) })
+  if (command === 'gold') {
+    printJson({ ok: true, gold: await goldPrice(mppx!) })
     return
   }
 
-  if (command === 'current-weather') {
-    const geocodeBody = await geocode(mppx!)
-    printJson({ ok: true, currentWeather: await currentWeather(mppx!, geocodeBody) })
+  if (command === 'currency') {
+    printJson({ ok: true, currency: await currencyRate(mppx!) })
     return
   }
 
   if (command === 'once') {
-    printJson({ ok: true, run: await weatherOnce() })
+    printJson({ ok: true, run: await rateOnce() })
     return
   }
 
   if (command === 'twice') {
     const sharedMppx = await createMppxClient()
-    log('weather twice run 1 starting')
-    const first = await weatherOnce(sharedMppx)
-    log('weather twice run 1 completed')
-    log('weather twice run 2 starting')
-    const second = await weatherOnce(sharedMppx)
-    log('weather twice run 2 completed')
+    log('rate twice run 1 starting')
+    const first = await rateOnce(sharedMppx)
+    log('rate twice run 1 completed')
+    log('rate twice run 2 starting')
+    const second = await rateOnce(sharedMppx)
+    log('rate twice run 2 completed')
     printJson({ ok: true, runs: [first, second] })
     return
   }

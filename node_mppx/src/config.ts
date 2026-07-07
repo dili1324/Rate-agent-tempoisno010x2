@@ -1,11 +1,11 @@
 import { isHex, type Hex } from 'viem'
 
-export const OPENWEATHER_MPP_BASE_URL =
-  process.env.OPENWEATHER_MPP_BASE_URL ?? 'https://openweather.mpp.paywithlocus.com/openweather'
+export const ALPHAVANTAGE_MPP_BASE_URL =
+  process.env.ALPHAVANTAGE_MPP_BASE_URL ?? 'https://alphavantage.mpp.paywithlocus.com'
 
-export const DEFAULT_CITY_QUERY = process.env.WEATHER_CITY_QUERY ?? 'Hanoi,VN'
-export const DEFAULT_UNITS = process.env.WEATHER_UNITS ?? 'metric'
-export const DEFAULT_LANG = process.env.WEATHER_LANG ?? 'vi'
+export const DEFAULT_METAL_SYMBOL = process.env.METAL_SYMBOL ?? 'XAU'
+export const DEFAULT_BASE_CURRENCY = process.env.BASE_CURRENCY ?? 'USD'
+export const DEFAULT_QUOTE_CURRENCY = process.env.QUOTE_CURRENCY ?? 'VND'
 
 function requireHex(value: string, name: string): Hex {
   if (!isHex(value)) {
@@ -24,5 +24,5 @@ export const ACCESS_KEY_EXPIRY_DAYS = Number(process.env.MPPX_ACCESS_KEY_EXPIRY_
 export const ACCESS_KEY_PERIOD_SECONDS = Number(process.env.MPPX_ACCESS_KEY_PERIOD_SECONDS ?? '86400')
 
 export function endpoint(path: string): string {
-  return `${OPENWEATHER_MPP_BASE_URL}${path}`
+  return `${ALPHAVANTAGE_MPP_BASE_URL}${path}`
 }

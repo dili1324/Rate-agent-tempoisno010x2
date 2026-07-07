@@ -1,22 +1,21 @@
-name: Weather Agent
+name: Rate Agent
 
 on:
   workflow_dispatch:
-  schedule:
-    # Daily at 06:50 Asia/Ho_Chi_Minh (GMT+7).
-    - cron: "50 23 * * *"
 
 jobs:
-  run-weather-agent:
+  run-rate-agent:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      WEATHER_CITY_QUERY: Hanoi,VN
-      WEATHER_UNITS: metric
-      WEATHER_LANG: vi
-      WEATHER_PAYMENT_MODE: mppx
-      ENABLE_GPT_SUMMARY: "false"
-      MPPX_COMMAND_TIMEOUT_SECONDS: "120"
+      RATE_SOURCE: ${{ vars.RATE_SOURCE || 'alphavantage' }}
+      RATE_PAYMENT_MODE: ${{ vars.RATE_PAYMENT_MODE || 'mppx' }}
+      BASE_CURRENCY: ${{ vars.BASE_CURRENCY || 'USD' }}
+      QUOTE_CURRENCY: ${{ vars.QUOTE_CURRENCY || 'VND' }}
+      METAL_SYMBOL: ${{ vars.METAL_SYMBOL || 'XAU' }}
+      TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Ho_Chi_Minh' }}
+      MPP_MAX_SPEND_USD: ${{ vars.MPP_MAX_SPEND_USD || '0.05' }}
+      MPPX_COMMAND_TIMEOUT_SECONDS: ${{ vars.MPPX_COMMAND_TIMEOUT_SECONDS || '120' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.0
@@ -78,8 +77,8 @@ jobs:
           fi
           python scripts/check_tempo_whoami.py /tmp/tempo-whoami.stdout /tmp/tempo-whoami.stderr
 
-      - name: Run Weather Agent
+      - name: Run Rate Agent
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python -m weather_agent
+        run: python -m rate_agent

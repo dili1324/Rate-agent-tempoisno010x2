@@ -1,16 +1,16 @@
 {
-  "name": "weather-agent-mppx-spike",
+  "name": "rate-agent-mppx-helper",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local TypeScript mppx spike for Weather Agent paid OpenWeather MPP requests.",
+  "description": "Local TypeScript mppx helper for Rate Agent paid Alpha Vantage MPP requests.",
   "scripts": {
     "connect": "tsx src/connect.ts",
-    "weather": "tsx src/weather.ts once",
-    "weather:once": "tsx src/weather.ts once",
-    "weather:twice": "tsx src/weather.ts twice",
-    "geocode": "tsx src/weather.ts geocode",
-    "current-weather": "tsx src/weather.ts current-weather",
+    "rate": "tsx src/rate.ts once",
+    "rate:once": "tsx src/rate.ts once",
+    "rate:twice": "tsx src/rate.ts twice",
+    "gold": "tsx src/rate.ts gold",
+    "currency": "tsx src/rate.ts currency",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

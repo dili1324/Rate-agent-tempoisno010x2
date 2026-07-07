@@ -1,18 +1,17 @@
-from weather_agent.formatter import format_weather_message
+from rate_agent.formatter import format_rate_message
+from rate_agent.rate_client import RateQuote, RateSnapshot
 
 
-def test_format_weather_message_contains_core_fields() -> None:
-    weather = {
-        "_location": {"name": "Hanoi"},
-        "main": {"temp": 28.5, "feels_like": 31.2, "humidity": 80},
-        "wind": {"speed": 2.4},
-        "weather": [{"description": "mây rải rác"}],
-    }
+def test_format_rate_message_contains_core_fields() -> None:
+    snapshot = RateSnapshot(
+        gold=RateQuote(label="XAU/USD", value="2035.42", unit="USD per troy oz", source_time="2026-07-07"),
+        usd_vnd=RateQuote(label="USD/VND", value="25234.0000", unit="VND per USD", source_time="2026-07-07 00:00:00"),
+    )
 
-    message = format_weather_message(weather, summary="Mang áo mưa mỏng nếu ra ngoài.")
+    message = format_rate_message(snapshot)
 
-    assert "Thời tiết Hanoi" in message
-    assert "28.5°C" in message
-    assert "mây rải rác" in message
-    assert "Mang áo mưa" in message
-
+    assert "Rate Agent - cập nhật 07:30 GMT+7" in message
+    assert "XAU/USD: 2035.42" in message
+    assert "USD/VND: 25234" in message
+    assert "Nguồn: Alpha Vantage via MPP" in message
+    assert "Thời gian dữ liệu:" in message

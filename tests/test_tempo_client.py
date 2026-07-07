@@ -1,4 +1,4 @@
-from weather_agent.tempo_client import _extract_json_from_output, _is_wallet_ready, _redact_tempo_output
+from rate_agent.tempo_client import _extract_json_from_output, _is_wallet_ready, _redact_tempo_output
 
 
 def test_extract_json_from_tempo_output_with_continue_line() -> None:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-output="${1:-weather-agent-clean.zip}"
+output="${1:-rate-agent-clean.zip}"
 
 rm -f "$output"
 

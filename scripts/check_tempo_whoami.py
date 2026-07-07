@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from redact_ci_log import redact_text
-from weather_agent.tempo_client import _extract_json_from_output
+from rate_agent.tempo_client import _extract_json_from_output
 
 
 def _print_redacted_diagnostics(stdout: str, stderr: str) -> None:

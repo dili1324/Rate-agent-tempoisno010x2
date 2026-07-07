@@ -5,12 +5,11 @@ import logging
 import os
 import sys
 
-from weather_agent.config import Settings
-from weather_agent.gpt_client import GptSummaryClient
-from weather_agent.logging_config import configure_logging
-from weather_agent.telegram_client import TelegramClient
-from weather_agent.tempo_client import TempoRequestClient
-from weather_agent.weather_client import WeatherClient
+from rate_agent.config import Settings
+from rate_agent.logging_config import configure_logging
+from rate_agent.rate_client import RateClient
+from rate_agent.telegram_client import TelegramClient
+from rate_agent.tempo_client import TempoRequestClient
 
 
 def _tempo_from_env() -> TempoRequestClient:
@@ -24,40 +23,21 @@ def check_tempo() -> None:
     _tempo_from_env().check_wallet_ready()
 
 
-def check_weather() -> None:
+def check_rate() -> None:
     tempo = _tempo_from_env()
-    client = WeatherClient(
+    client = RateClient(
         tempo=tempo,
         base_url=os.getenv(
-            "OPENWEATHER_MPP_BASE_URL",
-            "https://openweather.mpp.paywithlocus.com/openweather",
+            "ALPHAVANTAGE_MPP_BASE_URL",
+            "https://alphavantage.mpp.paywithlocus.com",
         ).rstrip("/"),
     )
-    weather = client.get_hanoi_weather(
-        city_query=os.getenv("WEATHER_CITY_QUERY", "Hanoi,VN"),
-        units=os.getenv("WEATHER_UNITS", "metric"),
-        lang=os.getenv("WEATHER_LANG", "vi"),
+    snapshot = client.get_snapshot(
+        metal_symbol=os.getenv("METAL_SYMBOL", "XAU"),
+        base_currency=os.getenv("BASE_CURRENCY", "USD"),
+        quote_currency=os.getenv("QUOTE_CURRENCY", "VND"),
     )
-    location = weather.get("_location", {})
-    main = weather.get("main", {})
-    logging.info("Weather check OK location=%s temp=%s", location.get("name"), main.get("temp"))
-
-
-def check_gpt() -> None:
-    tempo = _tempo_from_env()
-    summary = GptSummaryClient(
-        tempo=tempo,
-        base_url=os.getenv("OPENAI_MPP_BASE_URL", "https://openai.mpp.tempo.xyz").rstrip("/"),
-        model=os.getenv("GPT_MODEL", "gpt-4o"),
-    ).summarize(
-        {
-            "_location": {"name": "Hanoi"},
-            "main": {"temp": 30, "feels_like": 33, "humidity": 75},
-            "wind": {"speed": 2.0},
-            "weather": [{"description": "mây rải rác"}],
-        }
-    )
-    logging.info("GPT check OK summary=%s", summary)
+    logging.info("Rate check OK gold=%s usd_vnd=%s", snapshot.gold.value, snapshot.usd_vnd.value)
 
 
 def check_telegram() -> None:
@@ -65,14 +45,14 @@ def check_telegram() -> None:
     TelegramClient(
         bot_token=settings.telegram_bot_token,
         chat_id=settings.telegram_chat_id,
-    ).send_message("Weather Agent debug check: Telegram is working.")
+    ).send_message("Rate Agent debug check: Telegram is working.")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run MVP debug checks for Weather Agent.")
+    parser = argparse.ArgumentParser(description="Run MVP debug checks for Rate Agent.")
     parser.add_argument(
         "check",
-        choices=["tempo", "weather", "telegram", "gpt", "all"],
+        choices=["tempo", "rate", "telegram", "all"],
         help="Which integration to check.",
     )
     args = parser.parse_args()
@@ -81,13 +61,8 @@ def main() -> int:
     try:
         if args.check in {"tempo", "all"}:
             check_tempo()
-        if args.check in {"weather", "all"}:
-            check_weather()
-        gpt_enabled = os.getenv("ENABLE_GPT_SUMMARY", "").strip().lower() in {"1", "true", "yes", "on"}
-        if args.check == "gpt" or (args.check == "all" and gpt_enabled):
-            check_gpt()
-        elif args.check == "all":
-            logging.info("Skipping GPT check because ENABLE_GPT_SUMMARY is not true")
+        if args.check in {"rate", "all"}:
+            check_rate()
         if args.check in {"telegram", "all"}:
             check_telegram()
     except Exception:

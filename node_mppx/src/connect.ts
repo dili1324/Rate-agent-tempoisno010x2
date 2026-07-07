@@ -12,7 +12,7 @@ async function main(): Promise<void> {
     ...authorization,
     dailyLimitUsdc: ACCESS_KEY_DAILY_LIMIT_USDC,
     expiryDays: ACCESS_KEY_EXPIRY_DAYS,
-    nextStep: 'Run npm run weather:twice. The helper uses the access key saved by the accounts CLI provider.',
+    nextStep: 'Run npm run rate:twice. The helper uses the access key saved by the accounts CLI provider.',
   })
 }
 
