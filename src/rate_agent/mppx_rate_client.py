@@ -8,7 +8,13 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from rate_agent.rate_client import RateDataError, RateSnapshot, parse_currency_quote, parse_gold_quote
+from rate_agent.rate_client import (
+    RateDataError,
+    RateSnapshot,
+    parse_currency_quote,
+    parse_gold_quote,
+    redact_helper_output,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -72,21 +78,25 @@ class MppxRateClient:
             raise RateDataError(f"Node mppx rate helper timed out after {self.timeout_seconds} seconds") from exc
 
         if completed.stderr:
-            logger.info("Node mppx helper stderr=%s", completed.stderr.strip())
+            logger.info("Node mppx helper stderr=%s", redact_helper_output(completed.stderr.strip()))
 
         if completed.returncode != 0:
+            safe_stdout = redact_helper_output(completed.stdout.strip())
+            safe_stderr = redact_helper_output(completed.stderr.strip())
             raise RateDataError(
                 "Node mppx rate helper failed "
-                f"exit_code={completed.returncode} stderr={completed.stderr.strip()!r}"
+                f"exit_code={completed.returncode} stdout={safe_stdout!r} stderr={safe_stderr!r}"
             )
 
         try:
             payload = json.loads(completed.stdout)
         except json.JSONDecodeError as exc:
-            raise RateDataError(f"Node mppx rate helper did not return clean JSON stdout={completed.stdout!r}") from exc
+            safe_stdout = redact_helper_output(completed.stdout.strip())
+            raise RateDataError(f"Node mppx rate helper did not return clean JSON stdout={safe_stdout!r}") from exc
 
         if not isinstance(payload, dict) or payload.get("ok") is not True:
-            raise RateDataError(f"Node mppx rate helper returned an error payload={payload!r}")
+            safe_payload = redact_helper_output(json.dumps(payload, ensure_ascii=False, default=str))
+            raise RateDataError(f"Node mppx rate helper returned an error payload={safe_payload}")
 
         run_payload = payload.get("run")
         if not isinstance(run_payload, dict):

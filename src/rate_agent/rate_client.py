@@ -10,6 +10,17 @@ class RateDataError(RuntimeError):
     """Raised when rate data is missing or malformed."""
 
 
+def redact_helper_output(output: str, limit: int = 6000) -> str:
+    import re
+
+    redacted = re.sub(r"(api\.telegram\.org/bot)[^/\s\"']+", r"\1<redacted>", output)
+    redacted = re.sub(r"(code=)[^&\s\"']+", r"\1<redacted>", redacted)
+    redacted = re.sub(r"0x[a-fA-F0-9]{40}", "<redacted-address>", redacted)
+    if len(redacted) > limit:
+        return f"{redacted[:limit]}...<truncated>"
+    return redacted
+
+
 @dataclass(frozen=True)
 class RateQuote:
     label: str
@@ -145,11 +156,10 @@ class RateClient:
 
     def get_snapshot(self, metal_symbol: str, base_currency: str, quote_currency: str) -> RateSnapshot:
         gold_payload = self.tempo.post_json(
-            f"{self.base_url}/alphavantage/commodity-price",
+            f"{self.base_url}/alphavantage/currency-exchange-rate",
             {
-                "commodity": "GOLD_SILVER_SPOT",
-                "symbol": metal_symbol,
-                "datatype": "json",
+                "from_currency": metal_symbol,
+                "to_currency": "USD",
             },
         )
         currency_payload = self.tempo.post_json(

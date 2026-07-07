@@ -15,7 +15,7 @@ type RateResponse = {
 
 async function postJson(mppx: ReturnType<typeof Mppx.create>, path: string, payload: unknown): Promise<unknown> {
   const url = endpoint(path)
-  log('request start', { url })
+  log('request start', { url, payload })
   const response = await mppx.fetch(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -31,10 +31,11 @@ async function postJson(mppx: ReturnType<typeof Mppx.create>, path: string, payl
   }
 
   if (!response.ok) {
+    log('request failed', { url, status: response.status, body })
     throw new Error(`MPP request failed status=${response.status} body=${JSON.stringify(body)}`)
   }
 
-  log('request completed', { url, status: response.status })
+  log('request completed', { url, status: response.status, body })
   return body
 }
 
@@ -84,10 +85,9 @@ async function createMppxClient(): Promise<ReturnType<typeof Mppx.create>> {
 }
 
 async function goldPrice(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
-  return postJson(mppx, '/alphavantage/commodity-price', {
-    commodity: 'GOLD_SILVER_SPOT',
-    symbol: DEFAULT_METAL_SYMBOL,
-    datatype: 'json',
+  return postJson(mppx, '/alphavantage/currency-exchange-rate', {
+    from_currency: DEFAULT_METAL_SYMBOL,
+    to_currency: 'USD',
   })
 }
 

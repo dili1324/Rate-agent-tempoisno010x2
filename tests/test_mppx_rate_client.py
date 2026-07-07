@@ -58,3 +58,29 @@ def test_mppx_rate_client_rejects_dirty_stdout(monkeypatch: pytest.MonkeyPatch, 
 
     with pytest.raises(RateDataError):
         client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+
+
+def test_mppx_rate_client_includes_redacted_failure_output(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_run(*args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=1,
+            stdout='{"ok":false,"error":"wallet 0xeDC42cA9000D7001f967b7bb51872af9f4E636c6"}',
+            stderr="Continue at: https://wallet.tempo.xyz/api/auth/cli?code=SECRET",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    client = MppxRateClient(helper_dir=str(tmp_path), timeout_seconds=10)
+
+    with pytest.raises(RateDataError) as exc_info:
+        client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+
+    message = str(exc_info.value)
+    assert "stdout=" in message
+    assert "stderr=" in message
+    assert "0xeDC42cA9000D7001f967b7bb51872af9f4E636c6" not in message
+    assert "SECRET" not in message
+    assert "<redacted-address>" in message

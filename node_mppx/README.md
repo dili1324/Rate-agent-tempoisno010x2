@@ -25,7 +25,6 @@ npm run currency
 
 The helper uses:
 
-- `POST /alphavantage/commodity-price`
 - `POST /alphavantage/currency-exchange-rate`
 
 Environment variables:

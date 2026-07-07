@@ -7,7 +7,6 @@ Rate Agent sends a daily Telegram message with:
 
 The primary data source is Alpha Vantage through Locus MPP:
 
-- `POST https://alphavantage.mpp.paywithlocus.com/alphavantage/commodity-price`
 - `POST https://alphavantage.mpp.paywithlocus.com/alphavantage/currency-exchange-rate`
 
 GitHub Actions is manual-only. The `Rate Agent` workflow exposes `workflow_dispatch`; cron-job.org should call the GitHub Actions API every day at 07:30 GMT+7. There is no internal GitHub Actions schedule.
