@@ -33,11 +33,10 @@ def check_rate() -> None:
         ).rstrip("/"),
     )
     snapshot = client.get_snapshot(
-        metal_symbol=os.getenv("METAL_SYMBOL", "XAU"),
         base_currency=os.getenv("BASE_CURRENCY", "USD"),
         quote_currency=os.getenv("QUOTE_CURRENCY", "VND"),
     )
-    logging.info("Rate check OK gold=%s usd_vnd=%s", snapshot.gold.value, snapshot.usd_vnd.value)
+    logging.info("Rate check OK usd_vnd=%s", snapshot.usd_vnd.value)
 
 
 def check_telegram() -> None:

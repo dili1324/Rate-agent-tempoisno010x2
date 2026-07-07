@@ -19,7 +19,6 @@ npm run connect
 ```bash
 npm run rate:once
 npm run rate:twice
-npm run gold
 npm run currency
 ```
 
@@ -30,7 +29,6 @@ The helper uses:
 Environment variables:
 
 - `ALPHAVANTAGE_MPP_BASE_URL`
-- `METAL_SYMBOL`
 - `BASE_CURRENCY`
 - `QUOTE_CURRENCY`
 - `MPPX_ACCESS_KEY_DAILY_LIMIT_USDC`

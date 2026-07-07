@@ -15,7 +15,6 @@ def test_mppx_rate_client_parses_helper_json(monkeypatch: pytest.MonkeyPatch, tm
     payload = {
         "ok": True,
         "run": {
-            "gold": {"data": {"data": [{"date": "2026-07-07", "value": "2035.42"}]}},
             "currency": {"Realtime Currency Exchange Rate": {"5. Exchange Rate": "25234.1234"}},
         },
     }
@@ -33,14 +32,13 @@ def test_mppx_rate_client_parses_helper_json(monkeypatch: pytest.MonkeyPatch, tm
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     client = MppxRateClient(helper_dir=str(tmp_path), timeout_seconds=10)
-    snapshot = client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+    snapshot = client.get_snapshot(base_currency="USD", quote_currency="VND")
 
-    assert snapshot.gold.value == "2035.42"
     assert snapshot.usd_vnd.value == "25234.1234"
     assert calls[0]["args"][0][1:] == ["run", "--silent", "rate:once"]
     assert Path(calls[0]["args"][0][0]).name == "npm"
     assert calls[0]["kwargs"]["cwd"] == tmp_path
-    assert calls[0]["kwargs"]["env"]["METAL_SYMBOL"] == "XAU"
+    assert calls[0]["kwargs"]["env"]["BASE_CURRENCY"] == "USD"
 
 
 def test_mppx_rate_client_rejects_dirty_stdout(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -57,7 +55,7 @@ def test_mppx_rate_client_rejects_dirty_stdout(monkeypatch: pytest.MonkeyPatch, 
     client = MppxRateClient(helper_dir=str(tmp_path), timeout_seconds=10)
 
     with pytest.raises(RateDataError):
-        client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+        client.get_snapshot(base_currency="USD", quote_currency="VND")
 
 
 def test_mppx_rate_client_includes_redacted_failure_output(
@@ -76,7 +74,7 @@ def test_mppx_rate_client_includes_redacted_failure_output(
     client = MppxRateClient(helper_dir=str(tmp_path), timeout_seconds=10)
 
     with pytest.raises(RateDataError) as exc_info:
-        client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+        client.get_snapshot(base_currency="USD", quote_currency="VND")
 
     message = str(exc_info.value)
     assert "stdout=" in message

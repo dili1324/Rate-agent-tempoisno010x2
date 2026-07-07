@@ -6,7 +6,6 @@ from rate_agent.rate_client import (
     RateClient,
     RateDataError,
     parse_currency_quote,
-    parse_gold_quote,
     redact_helper_output,
 )
 
@@ -38,39 +37,20 @@ def test_parse_currency_quote_accepts_alpha_vantage_realtime_shape() -> None:
     assert quote.source_time == "2026-07-07 00:00:00"
 
 
-def test_parse_gold_quote_accepts_locus_data_series_wrapper() -> None:
-    quote = parse_gold_quote(
-        {
-            "success": True,
-            "data": {
-                "name": "Gold spot",
-                "data": [{"date": "2026-07-07", "value": "2035.42"}],
-            },
-        }
-    )
-
-    assert quote.label == "XAU/USD"
-    assert quote.value == "2035.42"
-    assert quote.source_time == "2026-07-07"
-
-
 def test_rate_client_calls_alpha_vantage_endpoints() -> None:
     tempo = FakeTempo(
         [
-            {"data": {"data": [{"date": "2026-07-07", "value": "2035.42"}]}},
             {"Realtime Currency Exchange Rate": {"5. Exchange Rate": "25234.1234"}},
         ]
     )
     client = RateClient(tempo=tempo, base_url="https://example.test")  # type: ignore[arg-type]
 
-    snapshot = client.get_snapshot(metal_symbol="XAU", base_currency="USD", quote_currency="VND")
+    snapshot = client.get_snapshot(base_currency="USD", quote_currency="VND")
 
-    assert snapshot.gold.value == "2035.42"
     assert snapshot.usd_vnd.value == "25234.1234"
     assert tempo.calls[0][0].endswith("/alphavantage/currency-exchange-rate")
-    assert tempo.calls[0][1] == {"from_currency": "XAU", "to_currency": "USD"}
-    assert tempo.calls[1][0].endswith("/alphavantage/currency-exchange-rate")
-    assert tempo.calls[1][1] == {"from_currency": "USD", "to_currency": "VND"}
+    assert tempo.calls[0][1] == {"from_currency": "USD", "to_currency": "VND"}
+    assert len(tempo.calls) == 1
 
 
 def test_parse_currency_quote_rejects_missing_rate() -> None:

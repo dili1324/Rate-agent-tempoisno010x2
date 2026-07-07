@@ -12,7 +12,6 @@ jobs:
       RATE_PAYMENT_MODE: ${{ vars.RATE_PAYMENT_MODE || 'mppx' }}
       BASE_CURRENCY: ${{ vars.BASE_CURRENCY || 'USD' }}
       QUOTE_CURRENCY: ${{ vars.QUOTE_CURRENCY || 'VND' }}
-      METAL_SYMBOL: ${{ vars.METAL_SYMBOL || 'XAU' }}
       TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Ho_Chi_Minh' }}
       MPP_MAX_SPEND_USD: ${{ vars.MPP_MAX_SPEND_USD || '0.05' }}
       MPPX_COMMAND_TIMEOUT_SECONDS: ${{ vars.MPPX_COMMAND_TIMEOUT_SECONDS || '120' }}

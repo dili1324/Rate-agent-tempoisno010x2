@@ -2,7 +2,6 @@
 
 Rate Agent sends a daily Telegram message with:
 
-- XAU/USD
 - USD/VND
 
 The primary data source is Alpha Vantage through Locus MPP:
@@ -53,7 +52,6 @@ Recommended GitHub Variables:
 - `RATE_PAYMENT_MODE=mppx`
 - `BASE_CURRENCY=USD`
 - `QUOTE_CURRENCY=VND`
-- `METAL_SYMBOL=XAU`
 - `TIMEZONE=Asia/Ho_Chi_Minh`
 - `MPP_MAX_SPEND_USD=0.05`
 - `MPPX_COMMAND_TIMEOUT_SECONDS=120`
@@ -121,10 +119,9 @@ Example Telegram message:
 
 ```text
 Rate Agent - cập nhật 07:30 GMT+7 (2026-07-07 07:30 Asia/Ho_Chi_Minh)
-XAU/USD: 2035.42 (USD per troy oz)
 USD/VND: 25234 (VND per USD)
 Nguồn: Alpha Vantage via MPP
-Thời gian dữ liệu: 2026-07-07 / 2026-07-07 00:00:00
+Thời gian dữ liệu: 2026-07-07 00:00:00
 ```
 
 ## Tests

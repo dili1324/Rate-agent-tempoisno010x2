@@ -1,7 +1,6 @@
 import { Mppx, tempo } from 'mppx/client'
 import {
   DEFAULT_BASE_CURRENCY,
-  DEFAULT_METAL_SYMBOL,
   DEFAULT_QUOTE_CURRENCY,
   endpoint,
 } from './config.js'
@@ -9,7 +8,6 @@ import { log, printJson } from './log.js'
 import { createProvider } from './wallet.js'
 
 type RateResponse = {
-  gold: unknown
   currency: unknown
 }
 
@@ -84,13 +82,6 @@ async function createMppxClient(): Promise<ReturnType<typeof Mppx.create>> {
   return mppx
 }
 
-async function goldPrice(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
-  return postJson(mppx, '/alphavantage/currency-exchange-rate', {
-    from_currency: DEFAULT_METAL_SYMBOL,
-    to_currency: 'USD',
-  })
-}
-
 async function currencyRate(mppx: ReturnType<typeof Mppx.create>): Promise<unknown> {
   return postJson(mppx, '/alphavantage/currency-exchange-rate', {
     from_currency: DEFAULT_BASE_CURRENCY,
@@ -100,10 +91,8 @@ async function currencyRate(mppx: ReturnType<typeof Mppx.create>): Promise<unkno
 
 async function rateOnce(mppx?: ReturnType<typeof Mppx.create>): Promise<RateResponse> {
   mppx = mppx ?? (await createMppxClient())
-  const goldBody = await goldPrice(mppx)
   const currencyBody = await currencyRate(mppx)
   return {
-    gold: goldBody,
     currency: currencyBody,
   }
 }
@@ -111,11 +100,6 @@ async function rateOnce(mppx?: ReturnType<typeof Mppx.create>): Promise<RateResp
 async function main(): Promise<void> {
   const command = process.argv[2] ?? 'once'
   const mppx = command === 'once' || command === 'twice' ? undefined : await createMppxClient()
-
-  if (command === 'gold') {
-    printJson({ ok: true, gold: await goldPrice(mppx!) })
-    return
-  }
 
   if (command === 'currency') {
     printJson({ ok: true, currency: await currencyRate(mppx!) })

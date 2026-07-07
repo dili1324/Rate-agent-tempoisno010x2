@@ -3,7 +3,6 @@ import { isHex, type Hex } from 'viem'
 export const ALPHAVANTAGE_MPP_BASE_URL =
   process.env.ALPHAVANTAGE_MPP_BASE_URL ?? 'https://alphavantage.mpp.paywithlocus.com'
 
-export const DEFAULT_METAL_SYMBOL = process.env.METAL_SYMBOL ?? 'XAU'
 export const DEFAULT_BASE_CURRENCY = process.env.BASE_CURRENCY ?? 'USD'
 export const DEFAULT_QUOTE_CURRENCY = process.env.QUOTE_CURRENCY ?? 'VND'
 

@@ -12,7 +12,6 @@ from rate_agent.rate_client import (
     RateDataError,
     RateSnapshot,
     parse_currency_quote,
-    parse_gold_quote,
     redact_helper_output,
 )
 
@@ -37,7 +36,7 @@ class MppxRateClient:
     timeout_seconds: int
     npm_bin: str = "npm"
 
-    def get_snapshot(self, metal_symbol: str, base_currency: str, quote_currency: str) -> RateSnapshot:
+    def get_snapshot(self, base_currency: str, quote_currency: str) -> RateSnapshot:
         helper_path = Path(self.helper_dir)
         if not helper_path.exists():
             raise RateDataError(f"MPP helper directory does not exist: {helper_path}")
@@ -47,16 +46,14 @@ class MppxRateClient:
         env["PATH"] = f"{Path(npm_bin).parent}{os.pathsep}{env.get('PATH', '')}"
         env.update(
             {
-                "METAL_SYMBOL": metal_symbol,
                 "BASE_CURRENCY": base_currency,
                 "QUOTE_CURRENCY": quote_currency,
             }
         )
 
         logger.info(
-            "Calling Node mppx Alpha Vantage helper helper_dir=%s metal=%s pair=%s/%s",
+            "Calling Node mppx Alpha Vantage helper helper_dir=%s pair=%s/%s",
             helper_path,
-            metal_symbol,
             base_currency,
             quote_currency,
         )
@@ -103,6 +100,5 @@ class MppxRateClient:
             raise RateDataError("Node mppx rate helper response did not include run data")
 
         return RateSnapshot(
-            gold=parse_gold_quote(run_payload.get("gold"), symbol=metal_symbol),
             usd_vnd=parse_currency_quote(run_payload.get("currency"), label=f"{base_currency}/{quote_currency}"),
         )

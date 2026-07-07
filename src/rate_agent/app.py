@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 def run(settings: Settings) -> None:
     started_at = perf_counter()
     logger.info(
-        "Rate Agent started metal=%s pair=%s/%s rate_payment_mode=%s source=%s",
-        settings.metal_symbol,
+        "Rate Agent started pair=%s/%s rate_payment_mode=%s source=%s",
         settings.base_currency,
         settings.quote_currency,
         settings.rate_payment_mode,
@@ -41,7 +40,6 @@ def run(settings: Settings) -> None:
         )
         with timed_step(logger, "fetch Alpha Vantage rates via mppx"):
             snapshot = rate_client.get_snapshot(
-                metal_symbol=settings.metal_symbol,
                 base_currency=settings.base_currency,
                 quote_currency=settings.quote_currency,
             )
@@ -51,7 +49,6 @@ def run(settings: Settings) -> None:
         rate_client = RateClient(tempo=tempo, base_url=settings.rate_base_url)
         with timed_step(logger, "fetch Alpha Vantage rates via Tempo CLI"):
             snapshot = rate_client.get_snapshot(
-                metal_symbol=settings.metal_symbol,
                 base_currency=settings.base_currency,
                 quote_currency=settings.quote_currency,
             )

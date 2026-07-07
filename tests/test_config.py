@@ -20,7 +20,6 @@ def test_settings_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.rate_source == "alphavantage"
     assert settings.base_currency == "USD"
     assert settings.quote_currency == "VND"
-    assert settings.metal_symbol == "XAU"
     assert settings.rate_payment_mode == "cli"
 
 

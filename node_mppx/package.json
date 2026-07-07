@@ -9,7 +9,6 @@
     "rate": "tsx src/rate.ts once",
     "rate:once": "tsx src/rate.ts once",
     "rate:twice": "tsx src/rate.ts twice",
-    "gold": "tsx src/rate.ts gold",
     "currency": "tsx src/rate.ts currency",
     "typecheck": "tsc --noEmit"
   },

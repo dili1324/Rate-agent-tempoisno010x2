@@ -29,7 +29,6 @@ class Settings:
     rate_source: str
     base_currency: str
     quote_currency: str
-    metal_symbol: str
     timezone: str
 
     @classmethod
@@ -80,6 +79,5 @@ class Settings:
             rate_source=os.getenv("RATE_SOURCE", "alphavantage").strip().lower() or "alphavantage",
             base_currency=os.getenv("BASE_CURRENCY", "USD").strip().upper() or "USD",
             quote_currency=os.getenv("QUOTE_CURRENCY", "VND").strip().upper() or "VND",
-            metal_symbol=os.getenv("METAL_SYMBOL", "XAU").strip().upper() or "XAU",
             timezone=os.getenv("TIMEZONE", "Asia/Ho_Chi_Minh").strip() or "Asia/Ho_Chi_Minh",
         )
