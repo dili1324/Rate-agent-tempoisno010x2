@@ -15,6 +15,13 @@ def redact_helper_output(output: str, limit: int = 6000) -> str:
 
     redacted = re.sub(r"(api\.telegram\.org/bot)[^/\s\"']+", r"\1<redacted>", output)
     redacted = re.sub(r"(code=)[^&\s\"']+", r"\1<redacted>", redacted)
+    redacted = re.sub(r"(?i)(bearer\s+)[a-z0-9._~+/=-]+", r"\1<redacted>", redacted)
+    redacted = re.sub(
+        r'(?i)\b(access[_-]?key|auth[_-]?code|private[_-]?key|seed(?:[_-]?phrase)?|secret|token|wallet[_-]?store)\b'
+        r'(\s*[:=]\s*)("[^"]+"|\'[^\']+\'|[^\s,}]+)',
+        r"\1\2<redacted>",
+        redacted,
+    )
     redacted = re.sub(r"0x[a-fA-F0-9]{40}", "<redacted-address>", redacted)
     if len(redacted) > limit:
         return f"{redacted[:limit]}...<truncated>"

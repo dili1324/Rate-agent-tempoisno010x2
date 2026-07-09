@@ -13,6 +13,13 @@ cache/
 .cache/
 node_modules/
 node_mppx/node_modules/
+.tempo/
+**/.tempo/**
+wallet/
+**/wallet/**
+*.log
+*.b64
+tempo-home.tgz
 store.json
 **/store.json
 *secret*

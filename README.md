@@ -18,10 +18,10 @@ No `.env`, Telegram token, chat id, wallet store, private key, or seed phrase be
 cron-job.org -> GitHub Actions workflow_dispatch -> Python app -> Node mppx helper -> Alpha Vantage MPP -> Telegram Bot API
 ```
 
-The GitHub workflow restores the Tempo accounts CLI wallet store from GitHub Secrets, matching the previous weather-agent approach. The expected wallet is:
+The GitHub workflow restores the Tempo accounts CLI wallet store from GitHub Secrets, matching the previous weather-agent approach. The expected wallet should be checked privately, not published in this README.
 
 ```text
-0xeDC42cA9000D7001f967b7bb51872af9f4E636c6
+0x1111111111111111111111111111111111111111
 ```
 
 ## Repository Structure

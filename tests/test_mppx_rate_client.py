@@ -65,7 +65,7 @@ def test_mppx_rate_client_includes_redacted_failure_output(
         return subprocess.CompletedProcess(
             args=args[0],
             returncode=1,
-            stdout='{"ok":false,"error":"wallet 0xeDC42cA9000D7001f967b7bb51872af9f4E636c6"}',
+            stdout='{"ok":false,"error":"wallet 0x1111111111111111111111111111111111111111"}',
             stderr="Continue at: https://wallet.tempo.xyz/api/auth/cli?code=SECRET",
         )
 
@@ -79,6 +79,6 @@ def test_mppx_rate_client_includes_redacted_failure_output(
     message = str(exc_info.value)
     assert "stdout=" in message
     assert "stderr=" in message
-    assert "0xeDC42cA9000D7001f967b7bb51872af9f4E636c6" not in message
+    assert "0x1111111111111111111111111111111111111111" not in message
     assert "SECRET" not in message
     assert "<redacted-address>" in message

@@ -60,13 +60,13 @@ def test_parse_currency_quote_rejects_missing_rate() -> None:
 
 def test_redact_helper_output_hides_addresses_and_auth_codes() -> None:
     output = (
-        "wallet=0xeDC42cA9000D7001f967b7bb51872af9f4E636c6 "
+        "wallet=0x1111111111111111111111111111111111111111 "
         "url=https://wallet.tempo.xyz/api/auth/cli?code=SECRET"
     )
 
     redacted = redact_helper_output(output)
 
-    assert "0xeDC42cA9000D7001f967b7bb51872af9f4E636c6" not in redacted
+    assert "0x1111111111111111111111111111111111111111" not in redacted
     assert "SECRET" not in redacted
     assert "<redacted-address>" in redacted
     assert "code=<redacted>" in redacted
